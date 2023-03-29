@@ -1,0 +1,20 @@
+{
+    "name": "nestjs-base-repository",
+    "version": "1.0.5",
+    "description": "A demo base repository for NestJs project, Support MongoDB",
+    "main": "./lib/index.js",
+    "types": "./lib/index.d.ts",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "typescript": "^5.0.2"
+    },
+    "dependencies": {
+        "mongoose": "^7.0.3"
+    }
+}
