@@ -1,6 +1,6 @@
 {
     "name": "nestjs-base-repository",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "A demo base repository for NestJs project, Support MongoDB",
     "main": "./lib/index.js",
     "types": "./lib/index.d.ts",
@@ -8,8 +8,12 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tranduykhang1/nestjs-base-repository"
+    },
     "keywords": [],
-    "author": "",
+    "author": "Khang Tran",
     "license": "ISC",
     "devDependencies": {
         "typescript": "^5.0.2",
