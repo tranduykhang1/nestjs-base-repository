@@ -1,9 +1,15 @@
-import { Document, Model } from "mongoose";
+import {
+  Document,
+  FilterQuery,
+  Model,
+  PipelineStage,
+  PopulateOption,
+} from "mongoose";
 
 export class BaseRepository<T extends Document<T>, C, U> {
   constructor(private readonly _model: Model<T>) {}
 
-  async create(data: C, existed?: [keyof C], user?: string): Promise<T | null> {
+  async create(data: C, existed?: [keyof C]): Promise<T | null> {
     try {
       if (existed && existed.length > 0) {
         const filter: any = {};
@@ -21,7 +27,8 @@ export class BaseRepository<T extends Document<T>, C, U> {
       throw err;
     }
   }
-  async findOne(input: Record<keyof T, any> | any): Promise<T | null> {
+
+  async findOne(input: FilterQuery<T> | any): Promise<T | null> {
     try {
       return await this._model.findOne(input);
     } catch (err) {
@@ -29,26 +36,75 @@ export class BaseRepository<T extends Document<T>, C, U> {
     }
   }
 
-  async findAll(
-    input: Record<keyof T, any> | any,
-    limit = 10 as number,
-    offset = 0 as number,
-    sort = { createdAt: -1 } as Record<keyof T, unknown> | any
-  ): Promise<T[]> {
+  async findAll({
+    filter = {},
+    paginating = {},
+    populate = [],
+  }: {
+    filter: FilterQuery<T>;
+    paginating: any;
+    populate: Array<PopulateOption> | any;
+  }): Promise<Array<T>> {
+    const { sortField, sortOrder, offset = 0, limit = 10 } = paginating;
+
     try {
-      return await this._model
-        .find(input)
+      const query = this._model
+        .find(filter)
         .limit(limit)
         .skip(offset)
-        .sort(sort)
-        .sort({ _id: -1 });
+        .sort({ [sortField]: sortOrder });
+
+      if (populate) {
+        query.populate(populate);
+      }
+      return await query;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async paginatedAggregate<R = T>(
+    filter: Array<FilterQuery<T>>,
+    {
+      sortOrder,
+      sortField,
+      offset = 0,
+      limit = 10,
+    }: {
+      sortOrder: string;
+      sortField: string;
+      offset?: number;
+      limit?: number;
+    },
+    pipes?: Array<PipelineStage> | any
+  ): Promise<Array<R>> {
+    try {
+      const data = await this._model.aggregate([
+        {
+          $match: { $and: filter },
+        },
+        {
+          $sort: {
+            [sortField]: sortOrder,
+            _id: sortOrder,
+          },
+        },
+        ...pipes,
+        {
+          $skip: offset,
+        },
+        {
+          $limit: offset + limit,
+        },
+      ]);
+      return data;
     } catch (err) {
       throw err;
     }
   }
 
   async updateOne(
-    filter: Record<keyof T, any> | any,
+    filter: FilterQuery<T>,
     input: U | any
   ): Promise<T | unknown> {
     try {
@@ -58,7 +114,18 @@ export class BaseRepository<T extends Document<T>, C, U> {
     }
   }
 
-  async deleteOne(filter: Record<keyof T, any>): Promise<void> {
+  async updateMany(
+    filter: FilterQuery<T>,
+    input: U | any
+  ): Promise<T | unknown> {
+    try {
+      return await this._model.updateMany(filter, input, { new: true });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async deleteOne(filter: FilterQuery<T>): Promise<void> {
     try {
       await this._model.findOneAndDelete(filter);
       return;
@@ -67,7 +134,7 @@ export class BaseRepository<T extends Document<T>, C, U> {
     }
   }
 
-  async deleteMany(filter: [Record<keyof T, any>]): Promise<void> {
+  async deleteMany(filter: FilterQuery<T>): Promise<void> {
     try {
       await this._model.deleteMany(filter);
       return;
@@ -77,15 +144,19 @@ export class BaseRepository<T extends Document<T>, C, U> {
   }
 
   async count(filter: Record<keyof T, any>, pipe = []): Promise<number> {
-    const [result] = await this._model.aggregate([
-      {
-        $match: {
-          $and: [filter],
+    try {
+      const [result] = await this._model.aggregate([
+        {
+          $match: {
+            $and: [filter],
+          },
         },
-      },
-      ...pipe,
-      { $count: "count" },
-    ]);
-    return result ? result.count : 0;
+        ...pipe,
+        { $count: "count" },
+      ]);
+      return result ? result.count : 0;
+    } catch (err) {
+      throw err;
+    }
   }
 }

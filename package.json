@@ -1,22 +1,29 @@
 {
-    "name": "nestjs-base-repository",
-    "version": "1.0.8",
-    "description": "A demo base repository for NestJs project, Support MongoDB",
-    "main": "./lib/index.js",
-    "types": "./lib/index.d.ts",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/tranduykhang1/nestjs-base-repository"
-    },
-    "keywords": [],
-    "author": "Khang Tran",
-    "license": "ISC",
-    "devDependencies": {
-        "typescript": "^5.0.2",
-        "mongoose": "^7.0.3"
-    }
+  "name": "nestjs-base-repository",
+  "version": "1.1.0",
+  "description": "A demo base repository for NestJs project, Support MongoDB",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tranduykhang1/nestjs-base-repository.git"
+  },
+  "keywords": [],
+  "author": "Khang Tran",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.2",
+    "mongoose": "^7.0.3"
+  },
+  "bugs": {
+    "url": "https://github.com/tranduykhang1/nestjs-base-repository/issues"
+  },
+  "homepage": "https://github.com/tranduykhang1/nestjs-base-repository#readme",
+  "directories": {
+    "lib": "lib"
+  }
 }
